@@ -4,6 +4,9 @@
   "version": "0.0.0",
   "description": "Anonymous multilingual mental health support chatbot for India powered by Sarvam AI, Mayura translation, React, Vite, and Supabase.",
   "type": "module",
+  "engines": {
+    "node": "22.x"
+  },
   "keywords": [
     "manas",
     "sarvam-ai",
