@@ -1,4 +1,4 @@
-# Manas
+# Manas_Sarvam_AI_Companion
 
 **Anonymous, multilingual mental health support chatbot for India.**
 
