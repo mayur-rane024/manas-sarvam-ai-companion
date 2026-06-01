@@ -2,11 +2,11 @@ import React from 'react'
 import { useTranslation } from 'react-i18next'
 
 const LANGUAGES = [
-  { key: 'english', value: 'English',  flag: '🇬🇧' },
-  { key: 'hindi',   value: 'हिंदी',    flag: '🇮🇳' },
-  { key: 'marathi', value: 'मराठी',    flag: '🇮🇳' },
-  { key: 'tamil',   value: 'தமிழ்',   flag: '🇮🇳' },
-  { key: 'telugu',  value: 'తెలుగు',  flag: '🇮🇳' },
+  { key: 'english', value: 'English' },
+  { key: 'hindi', value: 'Hindi' },
+  { key: 'marathi', value: 'Marathi' },
+  { key: 'tamil', value: 'Tamil' },
+  { key: 'telugu', value: 'Telugu' },
 ]
 
 export default function LanguageQuestion({ value, onChange }) {
@@ -30,7 +30,7 @@ export default function LanguageQuestion({ value, onChange }) {
       </div>
 
       <div className="flex flex-col gap-3">
-        {LANGUAGES.map(({ key, value: langValue, flag }) => (
+        {LANGUAGES.map(({ key, value: langValue }) => (
           <button
             key={key}
             id={`lang-btn-${key}`}
@@ -45,7 +45,6 @@ export default function LanguageQuestion({ value, onChange }) {
               gap: '0.75rem',
             }}
           >
-            <span>{flag}</span>
             <span>{langValue}</span>
           </button>
         ))}

@@ -99,21 +99,6 @@ function extractFinalResponse(text) {
   return text.trim()
 }
 
-function extractAssistantReplyFromReasoning(text) {
-  if (!text) return ''
-
-  const finalDecisionMatch = text.match(/\*\*Final Decision:\*\*[\s\S]*?["“]([^"”]+)["”]/i)
-  if (finalDecisionMatch?.[1]) return finalDecisionMatch[1].trim()
-
-  const finalResponseMatch = text.match(/\*\*Refine the Final Response:\*\*[\s\S]*?["“]([^"”]+)["”]/i)
-  if (finalResponseMatch?.[1]) return finalResponseMatch[1].trim()
-
-  const selectedMatch = text.match(/(?:I'll go with|I will go with|Let's go with)[\s\S]*?["“]([^"”]+)["”]/i)
-  if (selectedMatch?.[1]) return selectedMatch[1].trim()
-
-  return ''
-}
-
 function looksLikeReasoning(text) {
   if (!text) return false
 
@@ -168,36 +153,10 @@ function inferLanguageFromText(text) {
 }
 
 function getResponseLanguage(profile, userText) {
-  const profileLanguage = profile?.preferred_language
+  const profileLanguage = LANGUAGE_MAP[profile?.preferred_language] || profile?.preferred_language
   if (profileLanguage && profileLanguage !== 'English') return profileLanguage
 
   return inferLanguageFromText(userText) || profileLanguage || 'English'
-}
-
-function buildFallbackReply(profile, userText) {
-  const lowerText = userText.toLowerCase()
-
-  if (hasCrisisKeyword(userText)) {
-    return 'I am really sorry you are feeling this way. Please reach out to iCall at 9152987821 - they are free, confidential, and available in multiple languages. If you might hurt yourself right now, please call emergency help or stay near someone you trust.'
-  }
-
-  if (matchesAny(lowerText, ['maskari', 'majak', 'joke', 'joking', 'kidding', 'bhava'])) {
-    return 'Okay, I hear you. Since you mentioned suicide earlier, I will still take it seriously for safety, but I am glad you are here talking to me.'
-  }
-
-  if (lowerText.includes('kya hua') || lowerText.includes('what happened')) {
-    return 'Nothing went wrong. I am here with you, and you can tell me what is on your mind.'
-  }
-
-  if (matchesAny(lowerText, ['hi', 'hello', 'hey', 'namaste'])) {
-    return 'Hi. I am here with you - what is going on today?'
-  }
-
-  if (profile?.mood_score <= 2) {
-    return 'I am here with you. Take a slow breath, and share only what feels okay right now.'
-  }
-
-  return 'I am listening. Tell me a little more about what you are feeling right now.'
 }
 
 function isGeneratedFallback(text) {
@@ -241,16 +200,17 @@ function hasCrisisKeyword(text) {
 }
 
 // ─── Build system prompt ───────────────────────────────────────────────────
-function buildSystemPrompt(profile, responseLanguage = profile?.preferred_language || 'English') {
+function buildSystemPrompt(profile) {
   const moodGuidance = profile?.mood_score <= 2
     ? 'The user may be feeling low, so be extra gentle.'
     : ''
 
   return `You are Manas, a warm mental health support companion for users in India.
-Reply directly in ${responseLanguage}. Keep it to 1-2 short sentences.
+Reply in English only. Keep it to 1-2 short sentences.
 Users may write in Romanized Marathi, Hindi, slang, or local dialect. Understand the meaning and reply simply.
 If the user mentions suicide or self-harm, include: Please reach out to iCall at 9152987821 - they are free and confidential.
-Do not diagnose, prescribe medicine, or write analysis/options. ${moodGuidance}`
+Do not diagnose, prescribe medicine, or write analysis/options.
+Output only the final user-facing reply. ${moodGuidance}`
 }
 // ─── Main component ────────────────────────────────────────────────────────
 export default function ChatPage({ session }) {
@@ -381,7 +341,7 @@ export default function ChatPage({ session }) {
 
       const newMsgCount = msgCount + 1
       const responseLanguage = getResponseLanguage(profile, text)
-      const systemPrompt = buildSystemPrompt(profile, responseLanguage)
+      const systemPrompt = buildSystemPrompt(profile)
 
       let aiContent = ''
 
@@ -394,7 +354,6 @@ if (sarvamKey) {
     { role: 'system', content: systemPrompt },
     ...history,
   ]
-  try {
     const response = await fetch('https://api.sarvam.ai/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -404,7 +363,7 @@ if (sarvamKey) {
       body: JSON.stringify({
         model: sarvamModel,
         messages: sarvamMessages,
-        max_tokens: 800,
+        max_tokens: 2500,
         temperature: 0.3,
         reasoning_effort: 'low',
       }),
@@ -421,28 +380,24 @@ if (sarvamKey) {
     
     // Never show reasoning_content. Sarvam may put private analysis there while content is null.
     const choice = data.choices?.[0]
+    if (choice?.finish_reason === 'length') {
+      throw new Error('Sarvam response was incomplete')
+    }
     const rawContent =
       choice?.message?.content?.trim() ||
       choice?.message?.text?.trim() ||
       choice?.text?.trim() ||
       choice?.content?.trim() ||
       ''
-    const rawReasoning = choice?.message?.reasoning_content?.trim() || ''
-
     aiContent = extractFinalResponse(rawContent)
-
-    if (!aiContent) {
-      aiContent = extractAssistantReplyFromReasoning(rawReasoning)
-    }
-
-    if (!aiContent || looksLikeReasoning(aiContent)) {      aiContent = buildFallbackReply(profile, text)
+    if (!aiContent || looksLikeReasoning(aiContent)) {
+      throw new Error('Sarvam returned no displayable response')
     }
     // ── Translate response to user's preferred language using Mayura ────────
     if (responseLanguage && responseLanguage !== 'English') {      aiContent = await translateWithMayura(aiContent, responseLanguage, sarvamKey)    }
-  } catch (err) {    aiContent = `Error: ${err.message}`
-  }
 } else {
-  aiContent = '⚙️ Sarvam API key not set. Add VITE_SARVAM_API_KEY to your .env file and restart the dev server.'}
+  throw new Error('Sarvam API key is not configured')
+}
       clearTimeout(stillThinkingTimerRef.current)
 
       const aiMsg = {
