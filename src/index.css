@@ -1,0 +1,360 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+:root {
+  --color-primary: #3B82F6;
+  --color-primary-light: #60A5FA;
+  --color-primary-dark: #2563EB;
+  --color-secondary: #10B981;
+  --color-secondary-light: #34D399;
+  --color-bg: #F0F9FF;
+  --color-bg-card: #FFFFFF;
+  --color-surface: #E0F2FE;
+  --color-text: #1E293B;
+  --color-text-muted: #64748B;
+  --color-border: #BAE6FD;
+  --color-user-bubble: #0EA5E9;
+  --color-ai-bubble: #F8FAFC;
+  --radius-card: 20px;
+  --shadow-card: 0 8px 32px rgba(14, 165, 233, 0.10);
+  --shadow-bubble: 0 2px 12px rgba(0,0,0,0.07);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  font-family: 'Inter', 'Noto Sans Devanagari', sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* ==============================
+   ONBOARDING ANIMATIONS
+   ============================== */
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideOutLeft {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(-40px); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.6; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes typing-dot {
+  0%, 80%, 100% { transform: scale(0.7); opacity: 0.4; }
+  40%           { transform: scale(1); opacity: 1; }
+}
+
+@keyframes bannerSlideDown {
+  from { transform: translateY(-100%); }
+  to   { transform: translateY(0); }
+}
+
+@keyframes floatWave {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+
+.slide-in { animation: slideInRight 0.4s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.fade-in-up { animation: fadeInUp 0.5s ease both; }
+
+/* ==============================
+   GLOBAL BUTTON RESET
+   ============================== */
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+}
+
+/* ==============================
+   ONBOARDING — OPTION BUTTONS
+   ============================== */
+.option-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 1.2rem;
+  border-radius: 50px;
+  border: 2px solid var(--color-border);
+  background: white;
+  color: var(--color-text);
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.option-btn:hover {
+  border-color: var(--color-primary);
+  background: #EFF6FF;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+.option-btn.selected {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  border-color: transparent;
+  color: white;
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.35);
+  transform: translateY(-2px);
+}
+
+.option-btn:focus-visible {
+  outline: 3px solid var(--color-primary-light);
+  outline-offset: 2px;
+}
+
+/* ==============================
+   EMOJI MOOD BUTTONS
+   ============================== */
+.emoji-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.75rem;
+  border-radius: 16px;
+  border: 2px solid transparent;
+  background: white;
+  transition: all 0.2s ease;
+  font-size: 2rem;
+  min-width: 60px;
+  box-shadow: var(--shadow-bubble);
+}
+
+.emoji-btn:hover {
+  transform: scale(1.15) translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.emoji-btn.selected {
+  border-color: var(--color-primary);
+  background: #EFF6FF;
+  transform: scale(1.2) translateY(-4px);
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.25);
+}
+
+/* ==============================
+   PROGRESS BAR
+   ============================== */
+.progress-bar-track {
+  width: 100%;
+  height: 6px;
+  background: #E0F2FE;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #38BDF8, #3B82F6);
+  transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ==============================
+   CARD
+   ============================== */
+.card {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  border: 1px solid rgba(186, 230, 253, 0.5);
+}
+
+/* ==============================
+   CHAT BUBBLES
+   ============================== */
+.bubble-user {
+  background: linear-gradient(135deg, #0EA5E9, #2563EB);
+  color: white;
+  border-radius: 18px 18px 4px 18px;
+  box-shadow: 0 2px 12px rgba(14, 165, 233, 0.25);
+}
+
+.bubble-ai {
+  background: white;
+  color: var(--color-text);
+  border-radius: 18px 18px 18px 4px;
+  box-shadow: var(--shadow-bubble);
+  border: 1px solid #E0F2FE;
+}
+
+/* ==============================
+   TYPING INDICATOR
+   ============================== */
+.typing-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #94A3B8;
+  animation: typing-dot 1.4s infinite ease-in-out;
+}
+
+.typing-dot:nth-child(1) { animation-delay: 0s; }
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+/* ==============================
+   CRISIS BANNER
+   ============================== */
+.crisis-banner {
+  animation: bannerSlideDown 0.35s ease both;
+}
+
+/* ==============================
+   CHAT INPUT
+   ============================== */
+.chat-input {
+  resize: none;
+  outline: none;
+  border: 2px solid #E0F2FE;
+  border-radius: 16px;
+  padding: 0.75rem 1rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: var(--color-text);
+  background: white;
+  transition: border-color 0.2s;
+  width: 100%;
+  max-height: 120px;
+  min-height: 48px;
+}
+
+.chat-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* ==============================
+   SEND BUTTON
+   ============================== */
+.send-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0EA5E9, #2563EB);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.35);
+}
+
+.send-btn:hover:not(:disabled) {
+  transform: scale(1.08);
+  box-shadow: 0 6px 20px rgba(14, 165, 233, 0.45);
+}
+
+.send-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ==============================
+   LOADING SPINNER
+   ============================== */
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #E0F2FE;
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* ==============================
+   SCROLLBAR STYLING
+   ============================== */
+.chat-messages-container::-webkit-scrollbar {
+  width: 4px;
+}
+
+.chat-messages-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-messages-container::-webkit-scrollbar-thumb {
+  background: #BAE6FD;
+  border-radius: 999px;
+}
+
+/* ==============================
+   GRADIENT BG ORBS (decorative)
+   ============================== */
+.bg-orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bg-orb-1 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, #BAE6FD, transparent);
+  top: -100px;
+  right: -100px;
+  animation: floatWave 8s ease-in-out infinite;
+}
+
+.bg-orb-2 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, #A7F3D0, transparent);
+  bottom: -80px;
+  left: -80px;
+  animation: floatWave 10s ease-in-out infinite reverse;
+}
+
+/* ==============================
+   RESPONSIVE UTILITIES
+   ============================== */
+.container-app {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 480px) {
+  .container-app {
+    padding: 0 0.75rem;
+  }
+}

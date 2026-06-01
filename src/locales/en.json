@@ -1,0 +1,93 @@
+{
+  "app": {
+    "name": "Manas",
+    "tagline": "A safe space, just for you",
+    "anonymous_note": "🔒 You are completely anonymous. We never ask for your name or phone number."
+  },
+  "onboarding": {
+    "step_of": "Step {{current}} of {{total}}",
+    "next": "Next",
+    "skip": "Skip",
+    "submit": "Begin my journey",
+    "submitting": "Setting things up...",
+    "questions": {
+      "age": {
+        "title": "How old are you?",
+        "subtitle": "This helps us understand you better"
+      },
+      "reasons": {
+        "title": "What brings you here today?",
+        "subtitle": "You can select more than one",
+        "options": {
+          "anxiety": "Anxiety",
+          "loneliness": "Loneliness",
+          "stress": "Stress",
+          "grief": "Grief",
+          "relationship": "Relationship issues",
+          "sleep": "Sleep problems",
+          "exploring": "Just exploring"
+        }
+      },
+      "mood": {
+        "title": "How are you feeling right now?",
+        "subtitle": "Tap the emoji that feels right",
+        "labels": {
+          "1": "Very sad",
+          "2": "Sad",
+          "3": "Okay",
+          "4": "Good",
+          "5": "Happy"
+        }
+      },
+      "therapist": {
+        "title": "Have you ever spoken to a therapist or counsellor before?",
+        "subtitle": "There's no right or wrong answer",
+        "options": {
+          "yes": "Yes",
+          "no": "No",
+          "tried": "I tried but couldn't continue"
+        }
+      },
+      "language": {
+        "title": "What language do you prefer to chat in?",
+        "subtitle": "Manas will talk with you in this language"
+      },
+      "open_text": {
+        "title": "Is there anything specific on your mind today?",
+        "subtitle": "This is completely optional",
+        "placeholder": "You can write anything, this is safe...",
+        "skip": "Skip this question"
+      }
+    }
+  },
+  "chat": {
+    "header": {
+      "anonymous": "Anonymous session",
+      "online": "Manas is here"
+    },
+    "input_placeholder": "Type a message...",
+    "send": "Send",
+    "thinking": "Thinking...",
+    "still_thinking": "Still thinking...",
+    "crisis": {
+      "banner": "If you are in crisis, please call iCall: 9152987821 (free, confidential)",
+      "close": "Close"
+    },
+    "error": "Something went wrong. Please try again.",
+    "welcome": "Hi, I'm Manas 🌿 I'm here to listen without judgement. You can share anything that's on your mind."
+  },
+  "age_groups": {
+    "under_18": "Under 18",
+    "18_25": "18–25",
+    "26_35": "26–35",
+    "36_50": "36–50",
+    "50_plus": "50+"
+  },
+  "languages": {
+    "english": "English",
+    "hindi": "हिंदी",
+    "marathi": "मराठी",
+    "tamil": "தமிழ்",
+    "telugu": "తెలుగు"
+  }
+}
