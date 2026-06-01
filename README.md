@@ -1,4 +1,4 @@
-# Manas_Sarvam_AI_Companion
+# Manas Sarvam AI Companion
 
 **Anonymous, multilingual mental health support chatbot for India.**
 
@@ -12,7 +12,7 @@ Anonymous multilingual mental health support chatbot for India, powered by Sarva
 
 ## Suggested Repository Name
 
-`manas-ai-companion`
+`manas-sarvam-ai-companion`
 
 Other good options:
 

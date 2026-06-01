@@ -1,5 +1,5 @@
 {
-  "name": "manas",
+  "name": "manas-sarvam-ai-companion",
   "private": true,
   "version": "0.0.0",
   "description": "Anonymous multilingual mental health support chatbot for India powered by Sarvam AI, Mayura translation, React, Vite, and Supabase.",
