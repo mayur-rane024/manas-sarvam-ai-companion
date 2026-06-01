@@ -45,6 +45,11 @@ const LANGUAGE_CODE_MAP = {
   'Punjabi': 'pa-IN',
 }
 
+function logChatDebug(label, details = {}) {
+  if (!import.meta.env.DEV) return
+  console.info(`[Manas debug] ${label}`, details)
+}
+
 // ─── Mayura translation helper ──────────────────────────────────────────────
 async function translateWithMayura(text, targetLanguage, apiKey) {
   if (!text || !targetLanguage || targetLanguage === 'English') {    return text
@@ -77,6 +82,8 @@ async function translateWithMayura(text, targetLanguage, apiKey) {
       body: JSON.stringify(payload),
     })
     const responseText = await response.text()
+    logChatDebug('Mayura response status', { status: response.status })
+
     if (!response.ok) {      return text
     }
 
@@ -368,11 +375,19 @@ if (sarvamKey) {
         reasoning_effort: 'low',
       }),
     })
+    logChatDebug('Sarvam response status', { status: response.status })
+
     if (!response.ok) {
-      const errText = await response.text()      throw new Error(`Sarvam API error: ${response.status} - ${errText}`)
+      const errText = await response.text()
+      logChatDebug('Sarvam HTTP error', {
+        status: response.status,
+        body: errText.slice(0, 500),
+      })
+      throw new Error(`Sarvam API error: ${response.status} - ${errText}`)
     }
 
-    const data = await response.json()    
+    const data = await response.json()
+
     // Handle different response formats
     if (data.error) {
       throw new Error(`Sarvam Error: ${JSON.stringify(data.error)}`)
@@ -380,6 +395,14 @@ if (sarvamKey) {
     
     // Never show reasoning_content. Sarvam may put private analysis there while content is null.
     const choice = data.choices?.[0]
+    logChatDebug('Sarvam choice summary', {
+      finishReason: choice?.finish_reason,
+      hasContent: Boolean(choice?.message?.content),
+      contentLength: choice?.message?.content?.length || 0,
+      reasoningLength: choice?.message?.reasoning_content?.length || 0,
+      refusal: choice?.message?.refusal || null,
+    })
+
     if (choice?.finish_reason === 'length') {
       throw new Error('Sarvam response was incomplete')
     }
@@ -393,8 +416,11 @@ if (sarvamKey) {
     if (!aiContent || looksLikeReasoning(aiContent)) {
       throw new Error('Sarvam returned no displayable response')
     }
-    // ── Translate response to user's preferred language using Mayura ────────
-    if (responseLanguage && responseLanguage !== 'English') {      aiContent = await translateWithMayura(aiContent, responseLanguage, sarvamKey)    }
+    // Translate response to user's preferred language using Mayura.
+    if (responseLanguage && responseLanguage !== 'English') {
+      logChatDebug('Translating response', { responseLanguage })
+      aiContent = await translateWithMayura(aiContent, responseLanguage, sarvamKey)
+    }
 } else {
   throw new Error('Sarvam API key is not configured')
 }
@@ -413,7 +439,12 @@ if (sarvamKey) {
       if (userId && profile) {
         saveChatMessage(userId, 'assistant', aiContent)
       }
-    } catch {
+    } catch (err) {
+      logChatDebug('Chat request failed', {
+        message: err instanceof Error ? err.message : String(err),
+        name: err instanceof Error ? err.name : 'UnknownError',
+        responseLanguage: getResponseLanguage(profile, text),
+      })
       clearTimeout(stillThinkingTimerRef.current)
       setError(t('chat.error'))
     } finally {
@@ -429,7 +460,7 @@ if (sarvamKey) {
     }
   }, [])
 
-  // ─── Loading state ──────────────────────────────────────────────────────
+  // Loading state
   if (isLoading) {
     return (
       <div style={{
@@ -449,7 +480,7 @@ if (sarvamKey) {
     )
   }
 
-  // ─── Render ─────────────────────────────────────────────────────────────
+  // Render
   return (
     <div style={{
       height: '100vh',
@@ -460,12 +491,10 @@ if (sarvamKey) {
       margin: '0 auto',
       position: 'relative',
     }}>
-      {/* Crisis Banner — fixed at top */}
       {showCrisis && (
         <CrisisBanner onClose={() => setShowCrisis(false)} />
       )}
 
-      {/* Header */}
       <header style={{
         padding: '1rem 1.25rem',
         display: 'flex',
@@ -494,31 +523,12 @@ if (sarvamKey) {
               {t('app.name')}
             </h1>
             <p style={{ fontSize: '0.7rem', color: '#10B981', fontWeight: 500 }}>
-              ● {t('chat.header.online')}
+              {t('chat.header.online')}
             </p>
           </div>
         </div>
 
-        {/* Phone call toggle button in header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          {/* <button
-            id="call-toggle-btn"
-            onClick={() => setShowCallCard(v => !v)}
-            title="Talk to Manas on a phone call"
-            style={{
-              width: 34, height: 34, borderRadius: '50%',
-              background: showCallCard
-                ? 'linear-gradient(135deg, #0EA5E9, #10B981)'
-                : '#F0F9FF',
-              border: '1px solid #BAE6FD',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              transition: 'all 0.2s',
-              flexShrink: 0,
-            }}
-          >
-            <Phone size={15} color={showCallCard ? 'white' : '#64748B'} />
-          </button> */}
-
           <div style={{
             display: 'flex', alignItems: 'center', gap: '0.35rem',
             padding: '0.4rem 0.75rem', borderRadius: '20px',
@@ -532,7 +542,6 @@ if (sarvamKey) {
         </div>
       </header>
 
-      {/* Messages area */}
       <div
         className="chat-messages-container"
         style={{
@@ -588,7 +597,6 @@ if (sarvamKey) {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input area */}
       <div style={{ flexShrink: 0 }}>
         <ChatInput
           value={inputValue}
